@@ -4,7 +4,7 @@
 .github hub
 chaotic-command active
 chaotic-gaming active
-Chaotic-Solutions active
+chaotic-solutions-site active
 chaotic-minds-collective active
 the-diagnostic-bay active
 docs active
