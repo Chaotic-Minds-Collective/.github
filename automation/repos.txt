@@ -8,8 +8,16 @@ chaotic-solutions-site active
 chaotic-minds-collective active
 the-diagnostic-bay active
 docs active
-mintlify-docs ignore
+chaotic-command-docs ignore
 chaotic-minds-solutions ignore
+Chaotic-Solutions ignore
+Chaotic-Creations ignore
+PARAN-App ignore
+PARAN-YARA ignore
+Paran-Translator ignore
+whats_poppin_app ignore
+agent-visibility-template ignore
+chaos-workflow-automator ignore
 chaotic-atlas-admin ignore
 chaotic-atlas-restart-overlay ignore
 chaotic-admin-console ignore
