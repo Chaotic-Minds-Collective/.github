@@ -5,6 +5,7 @@ ORG='Chaotic-Minds-Collective'
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 CONFIG="$ROOT/repos.txt"
 TEMPLATE="$ROOT/templates/ci.yml.tmpl"
+NOTIFY_TEMPLATE="$ROOT/templates/ci-notify.yml.tmpl"
 
 list_repos() {
   gh api "orgs/$ORG/repos?per_page=100" --paginate \
@@ -58,19 +59,25 @@ for repo in $(list_repos); do
     -f "ref=refs/heads/$branch" -f "sha=$base_sha" > /dev/null
 
   nodev=$(node_version "$repo")
-  content=$(sed -e "s|__NODE_VERSION__|$nodev|" -e "s|__DEFAULT_BRANCH__|$default_branch|" "$TEMPLATE" | base64 -w0)
+  ci_content=$(sed -e "s|__NODE_VERSION__|$nodev|" -e "s|__DEFAULT_BRANCH__|$default_branch|" "$TEMPLATE" | base64 -w0)
+  notify_content=$(base64 -w0 "$NOTIFY_TEMPLATE")
 
   gh api -X PUT "repos/$ORG/$repo/contents/.github/workflows/ci.yml" \
     -f 'message=ci: add shared org CI workflow' \
     -f "branch=$branch" \
-    -f "content=$content" > /dev/null
+    -f "content=$ci_content" > /dev/null
+
+  gh api -X PUT "repos/$ORG/$repo/contents/.github/workflows/ci-notify.yml" \
+    -f 'message=ci: add trusted failure notification workflow' \
+    -f "branch=$branch" \
+    -f "content=$notify_content" > /dev/null
 
   gh pr create \
     -R "$ORG/$repo" \
     --head "$branch" \
     --base "$default_branch" \
     --title 'ci: add shared org CI workflow' \
-    --body 'Adds the thin caller that runs the shared CI workflow from the org .github repo. Review and merge to enable standardized CI. See AUTOMATION.md in the .github repo.'
+    --body 'Adds two thin callers that use the shared org workflows from the .github repo: ci.yml (CI on push/PR) and ci-notify.yml (trusted workflow_run-based Discord alert on CI failure, which also covers fork and Dependabot PR runs). Review and merge to enable standardized CI. See AUTOMATION.md in the .github repo.'
 
   echo "$repo: onboarding PR opened"
   created=$((created+1))

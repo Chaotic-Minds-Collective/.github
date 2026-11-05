@@ -16,10 +16,3 @@ jobs:
     with:
       node-version: '__NODE_VERSION__'
     secrets: inherit
-
-  notify:
-    name: Notify failure
-    needs: ci
-    if: failure()
-    uses: Chaotic-Minds-Collective/.github/.github/workflows/notify-failure.yml@main
-    secrets: inherit

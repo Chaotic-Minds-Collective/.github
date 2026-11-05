@@ -1,0 +1,20 @@
+name: CI failure notify
+
+on:
+  workflow_run:
+    workflows:
+      - CI
+    types:
+      - completed
+
+permissions: {}
+
+jobs:
+  notify:
+    name: Discord alert
+    if: github.event.workflow_run.conclusion == 'failure'
+    uses: Chaotic-Minds-Collective/.github/.github/workflows/notify-failure.yml@main
+    with:
+      workflow-name: CI
+      run-url: ${{ github.event.workflow_run.html_url }}
+    secrets: inherit

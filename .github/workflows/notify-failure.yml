@@ -8,6 +8,11 @@ on:
         required: false
         type: string
         default: ''
+      run-url:
+        description: URL of the failed run to link (falls back to this run's URL when empty)
+        required: false
+        type: string
+        default: ''
 
 permissions: {}
 
@@ -20,7 +25,7 @@ jobs:
         env:
           WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
           REPO: ${{ github.repository }}
-          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          RUN_URL: ${{ inputs.run-url || format('{0}/{1}/actions/runs/{2}', github.server_url, github.repository, github.run_id) }}
           WORKFLOW: ${{ inputs.workflow-name }}
         run: |
           if [ -z "$WEBHOOK_URL" ]; then
