@@ -1,0 +1,22 @@
+name: Daily failure monitor
+
+on:
+  schedule:
+    - cron: '0 14 * * *'
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  monitor:
+    name: Report failed runs to Discord
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout automation hub
+        uses: actions/checkout@v4
+
+      - name: Scan and report
+        env:
+          GH_TOKEN: ${{ secrets.ORG_AUTOMATION_TOKEN }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: bash automation/scripts/monitor.sh
