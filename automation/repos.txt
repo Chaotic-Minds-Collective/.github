@@ -1,0 +1,17 @@
+# Org automation registry
+# Format: <repo> <active|ignore|hub> [node-version]
+# Repos not listed here default to 'active' (they get onboarded automatically).
+.github hub
+chaotic-command active
+chaotic-gaming active
+Chaotic-Solutions active
+chaotic-minds-collective active
+the-diagnostic-bay active
+docs active
+mintlify-docs ignore
+chaotic-minds-solutions ignore
+chaotic-atlas-admin ignore
+chaotic-atlas-restart-overlay ignore
+chaotic-admin-console ignore
+ChaoticAtlasResourceMap ignore
+chaotic-atlas-status-host ignore
