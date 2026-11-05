@@ -24,6 +24,7 @@ node_version() {
 
 created=0
 covered=0
+skipped=0
 
 for repo in $(list_repos); do
   if [ "$repo" = '.github' ]; then
@@ -32,19 +33,26 @@ for repo in $(list_repos); do
 
   action=$(configured "$repo")
   if [ "$action" = 'ignore' ]; then
+    echo "$repo: ignore"
     continue
   fi
 
-  # Treat any existing workflows directory content as already covered,
-  # regardless of the specific file names it contains.
-  wf_count=$(gh api "repos/$ORG/$repo/contents/.github/workflows" -q 'length' 2>/dev/null || echo 0)
-  if [ "$wf_count" != '0' ]; then
+  # Count files in .github/workflows. On any API failure or non-numeric
+  # output treat the count as 0 so the repo is NOT silently marked covered.
+  wf_count=$(gh api "repos/$ORG/$repo/contents/.github/workflows" \
+    -q 'if type == "array" then length else 0 end' 2>/dev/null || echo 0)
+  case "$wf_count" in
+    (*[!0-9]*|'') wf_count=0 ;;
+  esac
+  if [ "$wf_count" -gt 0 ]; then
+    echo "$repo: covered ($wf_count workflow file(s))"
     covered=$((covered+1))
     continue
   fi
 
   if ! gh api "repos/$ORG/$repo/contents/package.json" > /dev/null 2>&1; then
-    echo "$repo: no package.json at root - skipping (add it to repos.txt if it needs CI another way)"
+    echo "$repo: package.json check failed (missing or API error) - skipping"
+    skipped=$((skipped+1))
     continue
   fi
 
@@ -92,4 +100,4 @@ for repo in $(list_repos); do
   created=$((created+1))
 done
 
-echo "Done. Onboarding PRs opened: $created. Repos already covered: $covered."
+echo "Done. Onboarding PRs opened: $created. Repos already covered: $covered. Skipped (package.json check failed): $skipped."
