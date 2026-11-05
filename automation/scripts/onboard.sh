@@ -51,7 +51,7 @@ for repo in $(list_repos); do
   fi
 
   if ! gh api "repos/$ORG/$repo/contents/package.json" > /dev/null 2>&1; then
-    echo "$repo: no package.json at root - skipping"
+    echo "$repo: package.json check failed (missing or API error) - skipping"
     skipped=$((skipped+1))
     continue
   fi
@@ -100,4 +100,4 @@ for repo in $(list_repos); do
   created=$((created+1))
 done
 
-echo "Done. Onboarding PRs opened: $created. Repos already covered: $covered. Skipped (not Node): $skipped."
+echo "Done. Onboarding PRs opened: $created. Repos already covered: $covered. Skipped (package.json check failed): $skipped."
