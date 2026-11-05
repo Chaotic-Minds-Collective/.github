@@ -35,7 +35,10 @@ for repo in $(list_repos); do
     continue
   fi
 
-  if gh api "repos/$ORG/$repo/contents/.github/workflows/ci.yml" > /dev/null 2>&1; then
+  # Treat any existing workflows directory content as already covered,
+  # regardless of the specific file names it contains.
+  wf_count=$(gh api "repos/$ORG/$repo/contents/.github/workflows" -q 'length' 2>/dev/null || echo 0)
+  if [ "$wf_count" != '0' ]; then
     covered=$((covered+1))
     continue
   fi
@@ -54,6 +57,12 @@ for repo in $(list_repos); do
 
   default_branch=$(gh api "repos/$ORG/$repo" -q '.default_branch')
   base_sha=$(gh api "repos/$ORG/$repo/git/ref/heads/$default_branch" -q '.object.sha')
+
+  # Delete a stale onboarding branch from a previously closed PR before
+  # recreating it, so one leftover ref cannot abort the whole run.
+  if gh api "repos/$ORG/$repo/git/ref/heads/$branch" > /dev/null 2>&1; then
+    gh api -X DELETE "repos/$ORG/$repo/git/refs/heads/$branch" > /dev/null
+  fi
 
   gh api -X POST "repos/$ORG/$repo/git/refs" \
     -f "ref=refs/heads/$branch" -f "sha=$base_sha" > /dev/null
