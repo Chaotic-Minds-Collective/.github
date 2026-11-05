@@ -1,0 +1,18 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - '__DEFAULT_BRANCH__'
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    name: Shared CI
+    uses: Chaotic-Minds-Collective/.github/.github/workflows/shared-ci.yml@main
+    with:
+      node-version: '__NODE_VERSION__'
+    secrets: inherit

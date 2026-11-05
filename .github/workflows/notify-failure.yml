@@ -1,0 +1,40 @@
+name: Notify failure (Discord)
+
+on:
+  workflow_call:
+    inputs:
+      workflow-name:
+        description: Friendly name to show in the alert
+        required: false
+        type: string
+        default: ''
+      run-url:
+        description: URL of the failed run to link (falls back to this run's URL when empty)
+        required: false
+        type: string
+        default: ''
+
+permissions: {}
+
+jobs:
+  notify:
+    name: Discord alert
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send alert
+        env:
+          WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          REPO: ${{ github.repository }}
+          RUN_URL: ${{ inputs.run-url || format('{0}/{1}/actions/runs/{2}', github.server_url, github.repository, github.run_id) }}
+          WORKFLOW: ${{ inputs.workflow-name }}
+        run: |
+          if [ -z "$WEBHOOK_URL" ]; then
+            echo 'DISCORD_WEBHOOK_URL not configured - skipping alert.'
+            exit 0
+          fi
+          text="CI failed in $REPO"
+          if [ -n "$WORKFLOW" ]; then
+            text="CI failed in $REPO ($WORKFLOW)"
+          fi
+          payload=$(jq -n --arg t "$text" --arg u "$RUN_URL" '{content: ($t + "\n" + $u)}')
+          curl -sf -X POST "$WEBHOOK_URL" -H 'Content-Type: application/json' -d "$payload"

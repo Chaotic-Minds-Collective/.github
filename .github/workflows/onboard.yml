@@ -1,0 +1,22 @@
+name: Onboard new repos
+
+on:
+  schedule:
+    - cron: '17 */4 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  onboard:
+    name: Scan org and open onboarding PRs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout automation hub
+        uses: actions/checkout@v4
+
+      - name: Onboard repos missing CI
+        env:
+          GH_TOKEN: ${{ secrets.ORG_AUTOMATION_TOKEN }}
+        run: bash automation/scripts/onboard.sh
