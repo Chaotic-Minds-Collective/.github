@@ -1,0 +1,25 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    name: Shared CI
+    uses: Chaotic-Minds-Collective/.github/.github/workflows/shared-ci.yml@main
+    with:
+      node-version: '__NODE_VERSION__'
+    secrets: inherit
+
+  notify:
+    name: Notify failure
+    needs: ci
+    if: failure()
+    uses: Chaotic-Minds-Collective/.github/.github/workflows/notify-failure.yml@main
+    secrets: inherit
