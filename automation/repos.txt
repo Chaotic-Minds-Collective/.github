@@ -9,12 +9,7 @@ chaotic-minds-collective active
 the-diagnostic-bay active
 docs active
 chaotic-command-docs ignore
-chaotic-minds-solutions ignore
-Chaotic-Solutions ignore
-Chaotic-Creations ignore
 PARAN-App ignore
-PARAN-YARA ignore
-Paran-Translator ignore
 whats_poppin_app ignore
 agent-visibility-template ignore
 chaos-workflow-automator ignore
