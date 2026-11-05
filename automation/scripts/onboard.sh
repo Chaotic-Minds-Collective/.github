@@ -58,7 +58,7 @@ for repo in $(list_repos); do
     -f "ref=refs/heads/$branch" -f "sha=$base_sha" > /dev/null
 
   nodev=$(node_version "$repo")
-  content=$(sed "s/__NODE_VERSION__/$nodev/" "$TEMPLATE" | base64 -w0)
+  content=$(sed -e "s|__NODE_VERSION__|$nodev|" -e "s|__DEFAULT_BRANCH__|$default_branch|" "$TEMPLATE" | base64 -w0)
 
   gh api -X PUT "repos/$ORG/$repo/contents/.github/workflows/ci.yml" \
     -f 'message=ci: add shared org CI workflow' \
