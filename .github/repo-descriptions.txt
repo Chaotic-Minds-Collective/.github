@@ -1,0 +1,15 @@
+.github|Org-wide automation: shared CI, onboarding bot, daily monitor, Discord failure alerts
+chaotic-command|AI-driven Discord server builder and controller - central ops hub for Chaotic Minds Collective
+chaotic-gaming|Chaotic Gaming - community platform and server infrastructure. Built by gamers, for gamers.
+the-diagnostic-bay|The Diagnostic Bay - automotive diagnostics platform with AI-assisted troubleshooting, built by mechanics for mechanics
+chaotic-solutions-site|Chaotic Solutions business website - Next.js static export on Cloudflare. Order from the chaos.
+docs|Organization handbook and documentation, served via GitHub Pages
+chaotic-command-docs|Documentation site for Chaotic Command (MDX)
+chaotic-atlas-admin|Admin tools for the Atlas game server
+chaotic-atlas-restart-overlay|Restart overlay for the Atlas game server
+chaotic-atlas-status-host|Status page host for the Atlas game server
+chaotic-admin-console|Admin console for the Atlas game server
+ChaoticAtlasResourceMap|Chaotic Minds Atlas Resource Map
+chaos-workflow-automator|Superseded - org automation lives in the .github repo
+agent-visibility-template|Vite/TS + Cloudflare Worker template with AGENTS.md
+whats_poppin_app|The Vibe App (paused)
