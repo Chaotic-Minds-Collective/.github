@@ -16,11 +16,13 @@ cutoff=$(date -u -d '24 hours ago' '+%Y-%m-%dT%H:%M:%SZ')
 
 # GitHub removed GET /orgs/{org}/actions/runs from the REST API, so enumerate
 # the org's repositories via the search API and scan each repo individually.
-repos=$(gh api "search/repositories?q=org%3A$ORG+fork:false&per_page=100" --paginate \
-  -q '.items[].name')
+# Paginate through every page of results; keep only non-fork repositories.
+repos=$(gh api --paginate "search/repositories?q=org%3A$ORG+fork:false&per_page=100" \
+  -q '.items[] | select(.fork == false) | .name' 2>/dev/null | sort -u) || repos=""
 
 if [ -z "$repos" ]; then
-  # Fallback: use the checked-in registry (format: "<repo> <active|ignore|hub>").
+  # Fallback: use the checked-in registry (format: "<repo> <active|ignore|hub>")
+  # only when the complete paginated search result is empty.
   repos=$(grep -vE '^(#|$)' automation/repos.txt | awk '{print $1}')
 fi
 
@@ -29,19 +31,41 @@ if [ -z "$repos" ]; then
   exit 1
 fi
 
+# Print failure TSV lines (repo, name, url, updated_at) for one repository,
+# following every page of its workflow runs. Returns 1 if the repo cannot be
+# scanned at all.
+scan_repo() {
+  local repo="$1" page=1 total=0 count resp
+  while :; do
+    if ! resp=$(gh api "repos/$ORG/$repo/actions/runs?created=%3E$since_created&per_page=100&page=$page" 2>/dev/null); then
+      return 1
+    fi
+    jq -r '.workflow_runs[]
+        | select(.conclusion == "failure")
+        | [.repository.name, .name, .html_url, .updated_at]
+        | @tsv' <<<"$resp"
+    count=$(jq '.workflow_runs | length' <<<"$resp")
+    total=$((total + count))
+    # This endpoint returns at most 1,000 runs per query; hitting that many
+    # means any deeper pages are unreachable, so the scan may be incomplete.
+    if [ "$total" -ge 1000 ]; then
+      echo "Warning: $repo has 1,000+ runs in the scan window; its scan may be incomplete." >&2
+      break
+    fi
+    [ "$count" -lt 100 ] && break
+    page=$((page + 1))
+  done
+}
+
 failures=""
 skipped=""
 for repo in $repos; do
-  # The created filter caps results at 1,000; flag an incomplete scan rather
-  # than silently treating a truncated result as complete.
-  repo_failures=$(gh api "repos/$ORG/$repo/actions/runs?created=%3E$since_created&per_page=100" --paginate \
-    -q 'if .total_count > 1000 then error("Workflow run search exceeds the 1,000-result limit")
-        else .workflow_runs[]
-        | select(.conclusion == "failure")
-        | [.repository.name, .name, .html_url, .updated_at]
-        | @tsv end' \
-    | awk -F'\t' -v cutoff="$cutoff" '$4 > cutoff' \
-    | cut -f1-3) || { skipped="$skipped $repo"; continue; }
+  if ! repo_failures=$(scan_repo "$repo" \
+      | awk -F'\t' -v cutoff="$cutoff" '$4 > cutoff' \
+      | cut -f1-3); then
+    skipped="$skipped $repo"
+    continue
+  fi
   if [ -n "$repo_failures" ]; then
     failures="${failures}${repo_failures}"$'\n'
   fi
