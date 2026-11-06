@@ -53,6 +53,8 @@ while read -r repo; do
   runs_status=$?
   if [ "$runs_status" -ne 0 ]; then
     skipped="${skipped} ${repo}"
+    failures="${failures}${repo}: not scanned (repository scan failed).
+"
     continue
   fi
 
