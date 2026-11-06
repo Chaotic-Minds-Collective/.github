@@ -17,9 +17,13 @@ cutoff=$(date -u -d '24 hours ago' '+%Y-%m-%dT%H:%M:%SZ')
 # GitHub removed GET /orgs/{org}/actions/runs from the REST API, so enumerate
 # the org's repositories via the search API and scan each repo individually.
 # Paginate through every page of results; keep only non-fork repositories.
+# Reject incomplete pages even when they contain items, discarding partial lists.
 discovery_failed=0
 if ! repos=$(gh api --paginate "search/repositories?q=org%3A$ORG+fork:false&per_page=100" \
-  -q '.items[] | select(.fork == false) | .name' | sort -u); then
+  | jq -sr 'if length > 0 and all(.[]; .incomplete_results == false) then
+      .[].items[] | select(.fork == false) | .name
+    else error("repository search response is incomplete or missing incomplete_results") end' \
+  | sort -u); then
   discovery_failed=1
   repos=""
 fi
