@@ -1,7 +1,22 @@
 #!/usr/bin/env bash
-set -euo pipefail
+# Daily workflow-failure monitor.
+#
+# Scans every registered 'active' repo for failed workflow runs in the last
+# 24 hours and posts a report to Discord.
+#
+# NOTE: Fine-grained PATs cannot read org-level Actions endpoints
+# (/orgs/{org}/actions/runs returns 404), so we query each repo's own
+# runs endpoint instead. A repo-level failure is logged and skipped, not
+# fatal, so one missing/inaccessible repo never kills the whole scan.
+set -uo pipefail
 
 ORG='Chaotic-Minds-Collective'
+REGISTRY="$(dirname "$0")/../repos.txt"
+
+if [ -z "${GH_TOKEN:-}" ]; then
+  echo 'GH_TOKEN not configured - cannot scan.'
+  exit 1
+fi
 
 if [ -z "${DISCORD_WEBHOOK_URL:-}" ]; then
   echo 'DISCORD_WEBHOOK_URL not configured - skipping alert.'
@@ -13,12 +28,34 @@ fi
 # caught by the updated_at filter below.
 since_created=$(date -u -d '48 hours ago' '+%Y-%m-%dT%H:%M:%SZ')
 
-failures=$(gh api "orgs/$ORG/actions/runs?created=%3E$since_created&per_page=100" --paginate \
-  -q '.workflow_runs[]
-      | select(.conclusion == "failure" and (.updated_at > (now - 86400 | todateiso8601)))
-      | [.repository.name, .name, .html_url] | @tsv')
+failures=""
+skipped=""
 
-if [ -z "$failures" ]; then
+while read -r line; do
+  repo=$(printf '%s' "$line" | awk '{print $1}')
+  status=$(printf '%s' "$line" | awk '{print $2}')
+  [ -z "$repo" ] && continue
+  case "$repo" in \#*) continue ;; esac
+  [ "$status" != "active" ] && continue
+
+  runs=$(gh api "repos/$ORG/$repo/actions/runs?created=%3E$since_created&per_page=100" --paginate \
+    -q '.workflow_runs[]
+        | select(.conclusion == "failure" and (.updated_at > (now - 86400 | todateiso8601)))
+        | [.repository.name, .name, .html_url] | @tsv' 2>/dev/null)
+
+  if [ -n "$runs" ]; then
+    failures="${failures}${runs}
+"
+  elif [ $? -ne 0 ]; then
+    skipped="${skipped} ${repo}"
+  fi
+done < "$REGISTRY"
+
+if [ -n "$skipped" ]; then
+  echo "WARNING: could not scan the following repos (missing token permission or repo not found):$skipped"
+fi
+
+if [ -z "$(printf '%s' "$failures" | tr -d '\n ')" ]; then
   echo 'No failed workflow runs in the last 24 hours. Nothing to report.'
   exit 0
 fi
@@ -33,6 +70,7 @@ send_chunk() {
 count=0
 body=""
 while IFS= read -r line; do
+  [ -z "$line" ] && continue
   if [ -n "$body" ] && [ $(( ${#body} + ${#line} )) -gt 1800 ]; then
     count=$((count+1))
     send_chunk "**Org workflow failures, last 24h (part $count):**" "$body"
