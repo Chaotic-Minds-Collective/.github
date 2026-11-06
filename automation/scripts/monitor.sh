@@ -17,12 +17,21 @@ cutoff=$(date -u -d '24 hours ago' '+%Y-%m-%dT%H:%M:%SZ')
 # GitHub removed GET /orgs/{org}/actions/runs from the REST API, so enumerate
 # the org's repositories via the search API and scan each repo individually.
 # Paginate through every page of results; keep only non-fork repositories.
-repos=$(gh api --paginate "search/repositories?q=org%3A$ORG+fork:false&per_page=100" \
-  -q '.items[] | select(.fork == false) | .name' 2>/dev/null | sort -u) || repos=""
+discovery_failed=0
+if ! repos=$(gh api --paginate "search/repositories?q=org%3A$ORG+fork:false&per_page=100" \
+  -q '.items[] | select(.fork == false) | .name' | sort -u); then
+  discovery_failed=1
+  repos=""
+fi
 
 if [ -z "$repos" ]; then
+  if [ "$discovery_failed" -eq 1 ]; then
+    echo "Warning: repository discovery failed; using registry fallback." >&2
+  else
+    echo "Warning: repository search returned no repositories; using registry fallback." >&2
+  fi
   # Fallback: use the checked-in registry (format: "<repo> <active|ignore|hub>")
-  # only when the complete paginated search result is empty.
+  # when search fails or the complete paginated result is empty.
   repos=$(grep -vE '^(#|$)' automation/repos.txt | awk '{print $1}')
 fi
 
@@ -33,18 +42,22 @@ fi
 
 # Print failure TSV lines (repo, name, url, updated_at) for one repository,
 # following every page of its workflow runs. Returns 1 if the repo cannot be
-# scanned at all.
+# scanned completely due to a request or response error.
 scan_repo() {
   local repo="$1" page=1 total=0 count resp
   while :; do
-    if ! resp=$(gh api "repos/$ORG/$repo/actions/runs?created=%3E$since_created&per_page=100&page=$page" 2>/dev/null); then
+    if ! resp=$(gh api "repos/$ORG/$repo/actions/runs?created=%3E$since_created&per_page=100&page=$page"); then
       return 1
     fi
-    jq -r '.workflow_runs[]
+    if ! count=$(jq -e '.workflow_runs | if type == "array" then length else error("workflow_runs must be an array") end' <<<"$resp"); then
+      return 1
+    fi
+    if ! jq -r '.workflow_runs[]
         | select(.conclusion == "failure")
         | [.repository.name, .name, .html_url, .updated_at]
-        | @tsv' <<<"$resp"
-    count=$(jq '.workflow_runs | length' <<<"$resp")
+        | @tsv' <<<"$resp"; then
+      return 1
+    fi
     total=$((total + count))
     # This endpoint returns at most 1,000 runs per query; hitting that many
     # means any deeper pages are unreachable, so the scan may be incomplete.
