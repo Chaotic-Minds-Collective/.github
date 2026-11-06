@@ -51,10 +51,13 @@ An intelligent Discord management and automation platform designed to simplify s
 - [Visit Website](https://command.chaoticmindsgaming.com)
 - [GitHub Repository](https://github.com/Chaotic-Minds-Collective/chaotic-command)
 
-### 🔧 The Diagnostic Bay
+### 🔧 Greasy Dojo
+**Where diagnostic logic meets grease-monkey know-how.**
+
 An automotive diagnostic education and technology project focused on helping people understand vehicle problems, diagnostic processes, and repair information.
 
-- [GitHub Repository](https://github.com/Chaotic-Minds-Collective/the-diagnostic-bay)
+- [Visit Website](https://chaotic-minds-collective.github.io/grease-dojo/)
+- [GitHub Repository](https://github.com/Chaotic-Minds-Collective/grease-dojo)
 
 ---
 

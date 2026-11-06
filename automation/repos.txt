@@ -6,7 +6,7 @@ chaotic-command active
 chaotic-gaming active
 chaotic-solutions-site active
 chaotic-minds-collective active
-the-diagnostic-bay active
+grease-dojo active
 docs active
 chaotic-command-docs ignore
 PARAN-App ignore
