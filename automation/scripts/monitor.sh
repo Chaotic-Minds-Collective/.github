@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 ORG='Chaotic-Minds-Collective'; HUB='.github'; REG='automation/repos.txt'
+# fail MESSAGE - print a fatal error to stderr and exit 1.
+# Used only for report-flow failures: the workflow must fail rather than send
+# a wrong, empty, or silently-dropped report.
 fail(){ echo "Monitor failed: $1" >&2; exit 1; }
 [ -n "${DISCORD_WEBHOOK_URL:-}" ] || { echo 'DISCORD_WEBHOOK_URL not configured - skipping alert.'; exit 0; }
 # 48h scan window vs 24h report window; report-flow inputs are fatal.
@@ -21,7 +24,10 @@ if [ -s "$REG" ]; then
   repos=$(printf '%s\n' "$repos" \
     | awk 'NR==FNR{if($1!~/^#/&&$2=="ignore")ign[$1];next} NF&&!($0 in ign)&&!seen[$0]++' "$REG" -) || repos=""
 fi
-# Failure TSV (repo,name,url,updated_at) for one repo, all pages. Nonzero = cannot scan (non-fatal).
+# scan_repo REPO - print failure TSV lines (repo,name,url,updated_at) for one
+# repository, following every page of its workflow runs. Returns nonzero when
+# the repository cannot be scanned; the caller treats that as non-fatal and
+# records the repository as skipped.
 scan_repo(){
   local repo="$1" page=1 total=0 count resp
   while :; do
@@ -47,9 +53,19 @@ while read -r line; do
   rf=$(printf '%s\n' "$runs" | awk -F'\t' -v c="$cutoff" '$4 > c' | cut -f1-3)
   [ -n "$rf" ] && failures="$failures$rf"$'\n'
 done <<< "$repos"
-[ -n "$skipped" ] && echo "Warning: could not scan:$skipped" >&2
+# Skipped repositories are recorded in the report too: a failure-only exit
+# would otherwise drop the Discord report entirely, hiding repos we could
+# not scan. Keep the warning and mark them clearly in the report body.
+if [ -n "$skipped" ]; then
+  echo "Warning: could not scan:$skipped" >&2
+  for s in $skipped; do
+    failures="$failures$s"$'\t'"could not scan"$'\t'"(repository not scanned)"$'\n'
+  done
+fi
 failures="${failures%$'\n'}"
 [ -n "$failures" ] || { echo 'No failed workflow runs in the last 24 hours. Nothing to report.'; exit 0; }
+# send_chunk HEADER BODY - POST one Discord message. Any failure here is
+# fatal: the workflow must not report success when the report was not sent.
 send_chunk(){
   local payload
   payload=$(jq -n --arg h "$1" --arg b "$2" '{content:($h+"\n"+$b)}') || fail 'could not build the Discord payload'
