@@ -99,6 +99,7 @@ if [ -z "$failures" ]; then
   exit 0
 fi
 
+# Send a report header and body as JSON to Discord; return curl's exit status.
 send_chunk() {
   local header="$1" body="$2" payload
   payload=$(jq -n --arg h "$header" --arg b "$body" '{content: ($h + "\n" + $b)}')
