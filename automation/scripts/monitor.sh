@@ -16,7 +16,7 @@ cutoff=$(date -u -d '24 hours ago' '+%Y-%m-%dT%H:%M:%SZ')
 
 # GitHub removed GET /orgs/{org}/actions/runs from the REST API, so enumerate
 # the org's repositories via the search API and scan each repo individually.
-repos=$(gh api "search/repositories?q=org%3A$ORG+fork:false&per_page=100" \
+repos=$(gh api "search/repositories?q=org%3A$ORG+fork:false&per_page=100" --paginate \
   -q '.items[].name')
 
 if [ -z "$repos" ]; then
@@ -32,11 +32,14 @@ fi
 failures=""
 skipped=""
 for repo in $repos; do
-  repo_failures=$(gh api "repos/$ORG/$repo/actions/runs?created=%3E$since_created&per_page=100" \
-    -q '.workflow_runs[]
+  # The created filter caps results at 1,000; flag an incomplete scan rather
+  # than silently treating a truncated result as complete.
+  repo_failures=$(gh api "repos/$ORG/$repo/actions/runs?created=%3E$since_created&per_page=100" --paginate \
+    -q 'if .total_count > 1000 then error("Workflow run search exceeds the 1,000-result limit")
+        else .workflow_runs[]
         | select(.conclusion == "failure")
         | [.repository.name, .name, .html_url, .updated_at]
-        | @tsv' 2>/dev/null \
+        | @tsv end' \
     | awk -F'\t' -v cutoff="$cutoff" '$4 > cutoff' \
     | cut -f1-3) || { skipped="$skipped $repo"; continue; }
   if [ -n "$repo_failures" ]; then
