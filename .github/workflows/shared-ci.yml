@@ -67,3 +67,17 @@ jobs:
       - name: Test
         if: steps.pkg.outputs.test == 'yes'
         run: npm test
+
+  # Instant Discord alert when CI fails on a push to main. Pull-request
+  # failures are intentionally excluded so PR builds don't spam the channel;
+  # the daily monitor still reports them. Calls the org's reusable
+  # notify-failure workflow with secrets: inherit, so it uses the same
+  # org-level DISCORD_WEBHOOK_URL as the daily monitor.
+  notify:
+    name: Discord alert
+    needs: [ci]
+    if: ${{ failure() && github.event_name == 'push' }}
+    uses: Chaotic-Minds-Collective/.github/.github/workflows/notify-failure.yml@main
+    with:
+      workflow-name: CI
+    secrets: inherit
