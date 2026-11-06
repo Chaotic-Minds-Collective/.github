@@ -12,11 +12,43 @@ fi
 # runs created just before the previous scan but finished after it are still
 # caught by the updated_at filter below.
 since_created=$(date -u -d '48 hours ago' '+%Y-%m-%dT%H:%M:%SZ')
+cutoff=$(date -u -d '24 hours ago' '+%Y-%m-%dT%H:%M:%SZ')
 
-failures=$(gh api "orgs/$ORG/actions/runs?created=%3E$since_created&per_page=100" --paginate \
-  -q '.workflow_runs[]
-      | select(.conclusion == "failure" and (.updated_at > (now - 86400 | todateiso8601)))
-      | [.repository.name, .name, .html_url] | @tsv')
+# GitHub removed GET /orgs/{org}/actions/runs from the REST API, so enumerate
+# the org's repositories via the search API and scan each repo individually.
+repos=$(gh api "search/repositories?q=org%3A$ORG+fork:false&per_page=100" \
+  -q '.items[].name')
+
+if [ -z "$repos" ]; then
+  # Fallback: use the checked-in registry (format: "<repo> <active|ignore|hub>").
+  repos=$(grep -vE '^(#|$)' automation/repos.txt | awk '{print $1}')
+fi
+
+if [ -z "$repos" ]; then
+  echo "Could not enumerate repositories for org $ORG."
+  exit 1
+fi
+
+failures=""
+skipped=""
+for repo in $repos; do
+  repo_failures=$(gh api "repos/$ORG/$repo/actions/runs?created=%3E$since_created&per_page=100" \
+    -q '.workflow_runs[]
+        | select(.conclusion == "failure")
+        | [.repository.name, .name, .html_url, .updated_at]
+        | @tsv' 2>/dev/null \
+    | awk -F'\t' -v cutoff="$cutoff" '$4 > cutoff' \
+    | cut -f1-3) || { skipped="$skipped $repo"; continue; }
+  if [ -n "$repo_failures" ]; then
+    failures="${failures}${repo_failures}"$'\n'
+  fi
+done
+
+if [ -n "$skipped" ]; then
+  echo "Warning: could not scan:$skipped" >&2
+fi
+
+failures="${failures%%$'\n'}"
 
 if [ -z "$failures" ]; then
   echo 'No failed workflow runs in the last 24 hours. Nothing to report.'
