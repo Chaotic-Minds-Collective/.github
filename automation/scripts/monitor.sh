@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Daily workflow-failure monitor.
 #
-# Scans every registered 'active' repo for failed workflow runs in the last
+# Scans active repos (including unlisted repos) and the hub for failures in the last
 # 24 hours and posts a report to Discord.
 #
 # NOTE: Fine-grained PATs cannot read org-level Actions endpoints
@@ -26,30 +26,41 @@ fi
 # Scan window is wider than the report window (48h by creation time) so that
 # runs created just before the previous scan but finished after it are still
 # caught by the updated_at filter below.
-since_created=$(date -u -d '48 hours ago' '+%Y-%m-%dT%H:%M:%SZ')
+since_created=$(date -u -d '48 hours ago' '+%Y-%m-%dT%H:%M:%SZ') || exit $?
 
 failures=""
 skipped=""
 
-while read -r line; do
-  repo=$(printf '%s' "$line" | awk '{print $1}')
-  status=$(printf '%s' "$line" | awk '{print $2}')
+# Match onboarding's discovery of non-archived repos. Keep registered active
+# repos as candidates too, and always scan the automation hub.
+discovered=$(gh api "orgs/$ORG/repos?per_page=100" --paginate \
+  -q '.[] | select(.archived == false) | .name') || exit $?
+registered=$(awk '$1 !~ /^#/ && $2 == "active" {print $1}' "$REGISTRY") || exit $?
+repos=$(printf '%s\n' "$discovered" "$registered" '.github' | sort -u) || exit $?
+
+while read -r repo; do
   [ -z "$repo" ] && continue
-  case "$repo" in \#*) continue ;; esac
-  [ "$status" != "active" ] && continue
+  status=$(awk -v r="$repo" '$1 == r {print $2; exit}' "$REGISTRY") || exit $?
+  if [ "$repo" != '.github' ] && [ "${status:-active}" != 'active' ]; then
+    continue
+  fi
 
   runs=$(gh api "repos/$ORG/$repo/actions/runs?created=%3E$since_created&per_page=100" --paginate \
     -q '.workflow_runs[]
         | select(.conclusion == "failure" and (.updated_at > (now - 86400 | todateiso8601)))
         | [.repository.name, .name, .html_url] | @tsv' 2>/dev/null)
 
+  runs_status=$?
+  if [ "$runs_status" -ne 0 ]; then
+    skipped="${skipped} ${repo}"
+    continue
+  fi
+
   if [ -n "$runs" ]; then
     failures="${failures}${runs}
 "
-  elif [ $? -ne 0 ]; then
-    skipped="${skipped} ${repo}"
   fi
-done < "$REGISTRY"
+done <<< "$repos"
 
 if [ -n "$skipped" ]; then
   echo "WARNING: could not scan the following repos (missing token permission or repo not found):$skipped"
@@ -62,7 +73,7 @@ fi
 
 send_chunk() {
   local header="$1" body="$2" payload
-  payload=$(jq -n --arg h "$header" --arg b "$body" '{content: ($h + "\n" + $b)}')
+  payload=$(jq -n --arg h "$header" --arg b "$body" '{content: ($h + "\n" + $b)}') || return $?
   curl -sf -X POST "$DISCORD_WEBHOOK_URL" -H 'Content-Type: application/json' -d "$payload" > /dev/null
 }
 
@@ -73,7 +84,7 @@ while IFS= read -r line; do
   [ -z "$line" ] && continue
   if [ -n "$body" ] && [ $(( ${#body} + ${#line} )) -gt 1800 ]; then
     count=$((count+1))
-    send_chunk "**Org workflow failures, last 24h (part $count):**" "$body"
+    send_chunk "**Org workflow failures, last 24h (part $count):**" "$body" || exit $?
     body=""
   fi
   body="${body:+$body
@@ -83,9 +94,9 @@ done <<< "$failures"
 if [ -n "$body" ]; then
   count=$((count+1))
   if [ "$count" -eq 1 ]; then
-    send_chunk "**Org workflow failures, last 24h:**" "$body"
+    send_chunk "**Org workflow failures, last 24h:**" "$body" || exit $?
   else
-    send_chunk "**Org workflow failures, last 24h (part $count):**" "$body"
+    send_chunk "**Org workflow failures, last 24h (part $count):**" "$body" || exit $?
   fi
 fi
 
