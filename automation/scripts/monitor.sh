@@ -73,10 +73,22 @@ if [ -z "$(printf '%s' "$failures" | tr -d '\n ')" ]; then
   exit 0
 fi
 
+# send_chunk HEADER BODY - POST one Discord message. Captures the HTTP status
+# code and response body so a rejected webhook produces a diagnosable error
+# instead of a bare curl exit code. Never echoes DISCORD_WEBHOOK_URL. Any
+# failure here is fatal: the workflow must not report success when the report
+# was not sent.
 send_chunk() {
-  local header="$1" body="$2" payload
+  local header="$1" body="$2" payload http_code tmp
   payload=$(jq -n --arg h "$header" --arg b "$body" '{content: ($h + "\n" + $b)}') || return $?
-  curl -sf -X POST "$DISCORD_WEBHOOK_URL" -H 'Content-Type: application/json' -d "$payload" > /dev/null
+  tmp=$(mktemp)
+  http_code=$(curl -sS -o "$tmp" -w '%{http_code}' -X POST "$DISCORD_WEBHOOK_URL" -H 'Content-Type: application/json' -d "$payload")
+  if [ $? -ne 0 ] || [ "$http_code" -lt 200 ] || [ "$http_code" -ge 300 ]; then
+    echo "ERROR: Discord webhook POST failed (HTTP $http_code): $(head -c 300 "$tmp")" >&2
+    rm -f "$tmp"
+    return 22
+  fi
+  rm -f "$tmp"
 }
 
 # Discord rejects messages over 2000 characters - chunk the report.
