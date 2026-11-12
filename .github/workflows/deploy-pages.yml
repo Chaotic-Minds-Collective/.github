@@ -43,7 +43,9 @@ jobs:
             npm install --no-audit --no-fund
           fi
       - name: Build
-        run: ${{ inputs.build-command }}
+        env:
+          BUILD_COMMAND: ${{ inputs.build-command }}
+        run: $BUILD_COMMAND
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
