@@ -31,9 +31,9 @@ Do not add a suffix mechanically when the repository name already has a clear, e
 
 ## Approved repository rename map
 
-The following names are the approved targets. The current names are included to make the transition auditable.
+The following table records the original names and the canonical repository names now in use. The 32 repository renames were completed on 2026-11-13; `.github` remains unchanged.
 
-| # | Current repository | Approved repository name | Brand / purpose |
+| # | Original repository | Canonical repository name | Brand / purpose |
 |---:|---|---|---|
 | 1 | `ChaoticAtlasResourceMap` | `cmg-atlas-resource-map-plugin` | CMG plugin |
 | 2 | `chaotic-atlas-restart-overlay` | `cmg-atlas-restart-overlay-plugin` | CMG plugin |
@@ -69,7 +69,7 @@ The following names are the approved targets. The current names are included to 
 | 32 | `chaotic-gaming-atlas-gridforge` | `cmg-atlas-gridforge-plugin` | CMG plugin |
 | 33 | `chaotic-gaming-atlas-adventures` | `cmg-atlas-adventures-plugin` | CMG plugin |
 
-## Migration requirements
+## Migration requirements and completion
 
 Repository renames and documentation updates must be coordinated rather than performed as blind global replacements.
 
@@ -84,7 +84,7 @@ For each repository:
 7. Run the repository's existing checks and tests after changes.
 8. Submit changes for review. Do not merge or deploy without separate authorization.
 
-GitHub repository slug changes should be performed through repository settings or an authorized GitHub repository-administration operation. After each rename, verify GitHub redirects and update canonical references rather than relying indefinitely on redirects. Update `automation/repos.txt` to the new slug immediately after each rename. The `.github/repo-descriptions.txt` manifest uses the approved target slugs; dispatch its manual description-update workflow only after the corresponding repository slugs exist.
+The GitHub repository slugs and descriptions have been updated to the canonical names above. The organization automation registry and profile links are being aligned in the follow-up migration change. GitHub redirects should not be relied on indefinitely; local clones, integrations, webhooks, deployment settings, GitHub Pages URLs, and external references still require post-rename verification.
 
 ## Brand usage notes
 
