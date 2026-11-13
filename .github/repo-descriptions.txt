@@ -1,15 +1,33 @@
-.github|Org-wide automation: shared CI, onboarding bot, daily monitor, Discord failure alerts
-chaotic-command|AI-driven Discord server builder and controller - central ops hub for Chaotic Minds Collective
-chaotic-gaming|Chaotic Gaming - community platform and server infrastructure. Built by gamers, for gamers.
-grease-dojo|Greasy Dojo - automotive diagnostics platform with AI-assisted troubleshooting, built by mechanics for mechanics
-chaotic-solutions-site|Chaotic Solutions business website - Next.js static export on Cloudflare. Order from the chaos.
-docs|Organization handbook and documentation, served via GitHub Pages
-chaotic-command-docs|Documentation site for Chaotic Command (MDX)
-chaotic-atlas-admin|Admin tools for the Atlas game server
-chaotic-atlas-restart-overlay|Restart overlay for the Atlas game server
-chaotic-atlas-status-host|Status page host for the Atlas game server
-chaotic-admin-console|Admin console for the Atlas game server
-ChaoticAtlasResourceMap|Chaotic Minds Atlas Resource Map
-chaos-workflow-automator|Superseded - org automation lives in the .github repo
-agent-visibility-template|Vite/TS + Cloudflare Worker template with AGENTS.md
-whats_poppin_app|The Vibe App (paused)
+.github|Chaotic Minds Collective organization-wide automation and shared GitHub community health files
+cmg-atlas-resource-map-plugin|CMG ATLAS resource map plugin and supporting resource/icon data
+cmg-atlas-restart-overlay-plugin|CMG ATLAS server restart overlay and restart schedule display
+cmg-atlas-status-host-plugin|CMG ATLAS server status host and status page component
+cmg-admin-console-plugin|CMG administration console for ATLAS server operations
+cmg-atlas-admin-plugin|CMG ATLAS admin tools, backend, Discord bot, frontend, and backup utilities
+cmc-whats-popping-app-site|CMC What's Poppin application (paused)
+cmc-paran-app-site|CMC PARAN bilingual English and Colombian Spanish speech translation app
+cmg-gaming-site|Chaotic Minds Gaming community website and player portal
+cmc-grease-dojo-site|Grease Dojo automotive diagnostics educational reference site
+cmc-collective-handbook|Chaotic Minds Collective public organizational handbook
+cc-command-site|Chaotic Minds Command Discord server setup and management application
+cc-command-docs|Chaotic Minds Command product documentation site
+cc-workflow-automator|Chaotic Minds Command workflow automation prototype; organization-wide automation is maintained in .github
+cmc-agent-visibility-template|CMC-maintained agent visibility template for Cloudflare Workers; upstream attribution is retained
+cms-solutions-site|Chaotic Minds Solutions technology and IT services website
+cmc-collective-site|Chaotic Minds Collective official website and project portfolio
+cmc-mcp-server|Central Chaotic Minds Collective MCP server for secure AI tool integrations
+cmg-discord-glitch-bot|Chaotic Minds Gaming Discord community bot for verification, onboarding, tickets, moderation, and server status
+cmg-ark-plugin|CMG ARK Survival Evolved game adapter scaffold
+cmg-atlas-plugin|CMG ATLAS plugin adapter and shared game integration foundation
+cmg-7dtd-plugin|CMG 7 Days to Die adapter and server integration
+cmg-atlas-core-plugin|CMG ATLAS Core backend for player identity, APIs, permissions, events, and entitlements
+cmg-sdk|CMG shared TypeScript contracts and SDK
+cmg-docs|CMG architecture, security standards, and operator documentation
+cmg-atlas-tribes-plugin|CMG ATLAS tribes and group management module
+cmg-atlas-commerce-plugin|CMG ATLAS commerce, shop, wallet, and reward delivery module
+cmg-atlas-connect-plugin|CMG ATLAS cross-grid chat, announcements, and Discord relay module
+cmg-atlas-player-plugin|CMG ATLAS player utilities and progression module
+cmg-atlas-world-plugin|CMG ATLAS world/grid policy and gameplay rules module
+cmg-atlas-sentinel-plugin|CMG ATLAS security, health, operations, and alerts module
+cmg-atlas-gridforge-plugin|CMG ATLAS configuration authoring and resource coverage workbench
+cmg-atlas-adventures-plugin|CMG ATLAS quest, challenge, and progression module
