@@ -2,19 +2,19 @@
 # Format: <repo> <active|ignore|hub> [node-version]
 # Repos not listed here default to 'active' (they get onboarded automatically).
 .github hub
-chaotic-command active
-chaotic-gaming active
-chaotic-solutions-site active
-chaotic-minds-collective active
-grease-dojo active
-docs active
-chaotic-command-docs ignore
-PARAN-App ignore
-whats_poppin_app ignore
-agent-visibility-template ignore
-chaos-workflow-automator ignore
-chaotic-atlas-admin ignore
-chaotic-atlas-restart-overlay ignore
-chaotic-admin-console ignore
-ChaoticAtlasResourceMap ignore
-chaotic-atlas-status-host ignore
+cc-command-site active
+cmg-gaming-site active
+cms-solutions-site active
+cmc-collective-site active
+cmc-grease-dojo-site active
+cmc-collective-handbook active
+cc-command-docs ignore
+cmc-paran-app-site ignore
+cmc-whats-popping-app-site ignore
+cmc-agent-visibility-template ignore
+cc-workflow-automator ignore
+cmg-atlas-admin-plugin ignore
+cmg-atlas-restart-overlay-plugin ignore
+cmg-admin-console-plugin ignore
+cmg-atlas-resource-map-plugin ignore
+cmg-atlas-status-host-plugin ignore
