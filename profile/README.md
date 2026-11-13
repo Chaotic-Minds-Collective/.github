@@ -31,7 +31,7 @@ Our projects span technology, artificial intelligence, software development, aut
 Technology solutions, AI-powered tools, automation, and digital services designed to solve real-world problems.
 
 - [Visit Website](https://solutions.chaoticmindscollective.com)
-- [GitHub Repository](https://github.com/Chaotic-Minds-Collective/Chaotic-Solutions)
+- [GitHub Repository](https://github.com/Chaotic-Minds-Collective/cms-solutions-site)
 
 ### 🎨 Chaotic Minds Creations (CMR)
 A home for creative experiments, original ideas, digital projects, and future ventures.
@@ -43,13 +43,13 @@ A home for creative experiments, original ideas, digital projects, and future ve
 A Chaotic Minds Gaming community built around connection, collaboration, and shared adventures. Bringing gamers together across different games and platforms.
 
 - [Visit Website](https://chaoticmindsgaming.com)
-- [GitHub Repository](https://github.com/Chaotic-Minds-Collective/chaotic-gaming)
+- [GitHub Repository](https://github.com/Chaotic-Minds-Collective/cmg-gaming-site)
 
 ### ⚙️ Chaotic Minds Command (CC)
 A Discord server setup and management application for server owners and administrators. It supports server inspection, role and channel planning, and reviewed structure changes. Advanced moderation, tickets, and automation remain planned rather than available in the current MVP.
 
 - [Visit Website](https://command.chaoticmindsgaming.com)
-- [GitHub Repository](https://github.com/Chaotic-Minds-Collective/chaotic-command)
+- [GitHub Repository](https://github.com/Chaotic-Minds-Collective/cc-command-site)
 
 ### 🔧 Grease Dojo
 **Where diagnostic logic meets grease-monkey know-how.**
@@ -57,7 +57,7 @@ A Discord server setup and management application for server owners and administ
 A Chaotic Minds Collective automotive diagnostic education and technology project focused on helping people understand vehicle problems, diagnostic processes, and repair information.
 
 - [Visit Website](https://chaotic-minds-collective.github.io/grease-dojo/)
-- [GitHub Repository](https://github.com/Chaotic-Minds-Collective/grease-dojo)
+- [GitHub Repository](https://github.com/Chaotic-Minds-Collective/cmc-grease-dojo-site)
 
 ---
 
