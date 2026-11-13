@@ -84,7 +84,7 @@ For each repository:
 7. Run the repository's existing checks and tests after changes.
 8. Submit changes for review. Do not merge or deploy without separate authorization.
 
-GitHub repository slug changes should be performed through repository settings or an authorized GitHub repository-administration operation. After each rename, verify GitHub redirects and update canonical references rather than relying indefinitely on redirects.
+GitHub repository slug changes should be performed through repository settings or an authorized GitHub repository-administration operation. After each rename, verify GitHub redirects and update canonical references rather than relying indefinitely on redirects. Update `automation/repos.txt` to the new slug immediately after each rename. The `.github/repo-descriptions.txt` manifest uses the approved target slugs; dispatch its manual description-update workflow only after the corresponding repository slugs exist.
 
 ## Brand usage notes
 

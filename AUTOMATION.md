@@ -1,6 +1,6 @@
-# Org Workflow Automation (chaos-workflow-automator)
+# Chaotic Minds Collective Organization Workflow Automation
 
-This repo (.github) is the automation hub for the Chaotic-Minds-Collective organization.
+This `.github` repository is the central automation hub for the Chaotic Minds Collective organization. The standalone CC Workflow Automator repository is separate from this organization-wide automation hub.
 
 ## Architecture in one minute
 
@@ -32,7 +32,7 @@ Edit shared-ci.yml here (feature branch + PR as always). Once merged, every repo
 
 ## Turning CI on in a repo
 
-Nothing to do by hand. The bot opens a PR titled: ci: add shared org CI workflow. Review it, merge it, done. To exclude a repo, add its name followed by the word ignore to automation/repos.txt here.
+Nothing to do by hand. The bot opens a PR titled: ci: add shared org CI workflow. Review it, merge it, done. To exclude a repo, add its current canonical repository slug followed by the word `ignore` to `automation/repos.txt` here. Update registry entries when repository slugs change.
 
 ## One-time setup (org owner, free)
 

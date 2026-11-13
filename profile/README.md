@@ -25,7 +25,7 @@ Our projects span technology, artificial intelligence, software development, aut
 
 ## 🚀 Our Projects
 
-### 💻 Chaotic Solutions
+### 💻 Chaotic Minds Solutions (CMS)
 **The Method To Your Madness.**
 
 Technology solutions, AI-powered tools, automation, and digital services designed to solve real-world problems.
@@ -33,28 +33,28 @@ Technology solutions, AI-powered tools, automation, and digital services designe
 - [Visit Website](https://solutions.chaoticmindscollective.com)
 - [GitHub Repository](https://github.com/Chaotic-Minds-Collective/Chaotic-Solutions)
 
-### 🎨 Chaotic Creations
+### 🎨 Chaotic Minds Creations (CMR)
 A home for creative experiments, original ideas, digital projects, and future ventures.
 
 - [Visit Website](https://creations.chaoticmindscollective.com)
 - [GitHub Repository — Coming Soon](#)
 
-### 🎮 Chaotic Gaming
-A gaming community built around connection, collaboration, and shared adventures. Bringing gamers together across different games and platforms.
+### 🎮 Chaotic Minds Gaming (CMG)
+A Chaotic Minds Gaming community built around connection, collaboration, and shared adventures. Bringing gamers together across different games and platforms.
 
 - [Visit Website](https://chaoticmindsgaming.com)
 - [GitHub Repository](https://github.com/Chaotic-Minds-Collective/chaotic-gaming)
 
-### ⚙️ Chaotic Command
-An intelligent Discord management and automation platform designed to simplify server setup, administration, moderation, and community management.
+### ⚙️ Chaotic Minds Command (CC)
+An intelligent Discord management and automation platform from Chaotic Minds Command designed to simplify server setup, administration, moderation, and community management.
 
 - [Visit Website](https://command.chaoticmindsgaming.com)
 - [GitHub Repository](https://github.com/Chaotic-Minds-Collective/chaotic-command)
 
-### 🔧 Greasy Dojo
+### 🔧 Grease Dojo
 **Where diagnostic logic meets grease-monkey know-how.**
 
-An automotive diagnostic education and technology project focused on helping people understand vehicle problems, diagnostic processes, and repair information.
+A Chaotic Minds Collective automotive diagnostic education and technology project focused on helping people understand vehicle problems, diagnostic processes, and repair information.
 
 - [Visit Website](https://chaotic-minds-collective.github.io/grease-dojo/)
 - [GitHub Repository](https://github.com/Chaotic-Minds-Collective/grease-dojo)
