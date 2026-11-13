@@ -46,7 +46,7 @@ A Chaotic Minds Gaming community built around connection, collaboration, and sha
 - [GitHub Repository](https://github.com/Chaotic-Minds-Collective/chaotic-gaming)
 
 ### ⚙️ Chaotic Minds Command (CC)
-An intelligent Discord management and automation platform from Chaotic Minds Command designed to simplify server setup, administration, moderation, and community management.
+A Discord server setup and management application for server owners and administrators. It supports server inspection, role and channel planning, and reviewed structure changes. Advanced moderation, tickets, and automation remain planned rather than available in the current MVP.
 
 - [Visit Website](https://command.chaoticmindsgaming.com)
 - [GitHub Repository](https://github.com/Chaotic-Minds-Collective/chaotic-command)
