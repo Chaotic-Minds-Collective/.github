@@ -56,7 +56,7 @@ A Discord server setup and management application for server owners and administ
 
 A Chaotic Minds Collective automotive diagnostic education and technology project focused on helping people understand vehicle problems, diagnostic processes, and repair information.
 
-- [Visit Website](https://chaotic-minds-collective.github.io/grease-dojo/)
+- [Visit Website](https://chaotic-minds-collective.github.io/cmc-grease-dojo-site/)
 - [GitHub Repository](https://github.com/Chaotic-Minds-Collective/cmc-grease-dojo-site)
 
 ---
